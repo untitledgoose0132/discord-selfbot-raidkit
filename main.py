@@ -13,19 +13,9 @@ from discord.ext import commands
 from InquirerPy.inquirer import confirm, number, secret, select, text  # type: ignore
 from InquirerPy.validator import EmptyInputValidator
 
-import conf
 from tokengrabber import get_token
 
-bot = commands.Bot(
-  command_prefix=commands.when_mentioned_or(conf.PREFIX),
-  case_insensitive=True,
-  allowed_mentions=conf.ALLOWED_MENTIONS,
-  strip_after_prefix=True,
-  help_command=None,
-  max_messages=conf.MSG_CACHE_SIZE,
-  shard_id=0,
-  owner_ids=[589350028837912576]
-)
+bot = commands.Bot(command_prefix=commands.when_mentioned)
 BotT = commands.Bot
 log: Logger = getLogger("discord")
 
