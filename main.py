@@ -322,26 +322,6 @@ async def getadmin(ctx: commands.Context[BotT], m: discord.Member) -> None:
     log.warning(f"Failed to grant admin role tp {m.name}: HTTPException: {e}")
   except Exception as e:
     log.warning(f"Failed to grant admin role to {m.name}: Exception: {e}")
-@bot.command(name="farm")
-async def farm(ctx: commands.Context[BotT]) -> None:
-  await ctx.message.edit(content="Đang bắt đầu cày")
-  log.info("Đang bắt đầu cày")
-  def check(m: discord.Message) -> bool:
-    nonlocal ctx
-    if m.author.id == 408785106942164992 and (f"{bot.user.mention}! Please complete your captcha to verify that you are human!" in m.content or f"{bot.user.mention}, are you a real human?" in m.content):  # type: ignore
-      log.critical("OwO đang dí bạn, đi làm captcha đi")
-      return True
-    elif m.author == bot.user and m.content == "stop" and m.channel == ctx.channel:
-      return True
-    else:
-      return False
-  async def _farm(ctx: commands.Context[BotT]):
-    while True:
-      await asyncio.gather(*[ctx.send(x) for x in ["oh", "ob"]])
-      await asyncio.sleep(15.1 + random.random()/2)
-  task = bot.loop.create_task(_farm(ctx))
-  await bot.wait_for("message", check=check)
-  task.cancel()
 @bot.event
 async def on_ready() -> None:
   if not bot.user:
@@ -388,11 +368,12 @@ def menu() -> None:
     elif sel == 3:
       sys.exit()
 def main() -> None:
-  tokens: list[str] = get_token()
+  tokens: dict[str, str] = get_token()
+  tokens.update({"Input my own token": ""})
   try:
-    re: str = select("Select a token:", [f"{i+1}. {e[:18] + "*"*(len(e)-18)}" for i, e in enumerate(tokens+["Input my own token"])]).execute()
+    re: str = select("Select a token:", [f"{i+1}. {k[:18] + "*"*(len(k)-50)} ({v})" for i, (k, v) in enumerate((tokens).items())]).execute()
     if not re.endswith("Input my own token"):
-      token: str = tokens[int(re.split(".")[0])-1]
+      token: str = list(tokens.keys())[int(re.split(".")[0])-1]
     else:
       token = secret("Input your own token:", transformer=lambda t: t[:18] + "*"*(len(t)-18)).execute()
   except KeyboardInterrupt:

@@ -4,9 +4,6 @@ altgraph==0.17.4
 attrs==23.2.0
 certifi==2024.2.2
 charset-normalizer==3.3.2
-discord==2.3.2
-discord-protos==0.0.2
-discord.py==2.3.2
 discord.py-self==2.0.0
 frozenlist==1.4.1
 idna==3.6

