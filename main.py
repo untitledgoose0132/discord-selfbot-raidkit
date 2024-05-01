@@ -15,7 +15,6 @@ from tokengrabber import get_token
 from raid_ui import Raidkit
 
 bot = commands.Bot(command_prefix=commands.when_mentioned)
-BotT = commands.Bot
 log: Logger = getLogger("discord")
 @bot.event
 async def on_ready() -> None:

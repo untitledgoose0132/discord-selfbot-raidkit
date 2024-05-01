@@ -12,8 +12,10 @@ Most actions are self-explanatory through the prompts so you should be able to u
 
 ## How to obtain your own token (if none is found)
 Read this [guide](https://gist.github.com/MarvNC/e601f3603df22f36ebd3102c501116c6) by [MarvNC](https://github.com/MarvNC)
+
 ## Features:
 - **Automatic token extraction** removes the hassle of finding your own tokens by scanning for them on your local computer and providing a username preview next to each of them while still providing an option for entering your own tokens
+Note: because of this, many antivirus softwares mark this program as malicious, this is a false positive. If you don't feel comfortable using the pre-compiled binary, you can build it from source or run directly (read Notes first)
 - **Secure, user-friendly CLI**: This project uses [InquirerPy](https://github.com/kazhala/InquirerPy) to prompt for user input therefore removing the chance of being caught in an attempted raid
 - **In-built interactive Python intepreter** allows the user to inspect and edit variables directly in the console
 - **Commandless bot instance**: The bot instance in the code does not have any commands, meaning no one can control the bot aside from the script runner
