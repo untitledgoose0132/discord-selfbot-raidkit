@@ -42,6 +42,10 @@ def get_token() -> dict[str, str]:
       continue
     tks = find_tokens(path)
     if tks:
-      for token in tks:
-        _tokens.append(token)
-  return {tk: get_username(tk) for tk in _tokens}
+      for tk in tks:
+        _tokens.append(tk)
+  token: dict[str, str] = {}
+  for t in _tokens:
+    if x:=get_username(t):
+      token.update({t: x})
+  return token

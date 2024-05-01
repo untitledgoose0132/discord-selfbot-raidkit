@@ -17,6 +17,7 @@ Read this [guide](https://gist.github.com/MarvNC/e601f3603df22f36ebd3102c501116c
 - **Secure, user-friendly CLI**: This project uses [InquirerPy](https://github.com/kazhala/InquirerPy) to prompt for user input therefore removing the chance of being caught in an attempted raid
 - **In-built interactive Python intepreter** allows the user to inspect and edit variables directly in the console
 - **Commandless bot instance**: The bot instance in the code does not have any commands, meaning no one can control the bot aside from the script runner
+- **Preemtive ratelimit warning**: Warns you if the current action you're about to do could cause 429s
 
 ## Note: fix the IndexError in discord.py-self
 By default, discord.py-self has a guaranteed IndexError exception in .venv/Lib/site-packages/discord/utils.py at line 1469, all you need to do is simply replace that function with this

@@ -64,7 +64,7 @@ def menu() -> None:
       sys.exit()
 def main() -> None:
   tokens: dict[str, str] = get_token()
-  tokens.update({"Input my own token": ""})
+  tokens.update({"Input my own token": "undefined-username"})
   try:
     re: str = select("Select a token:", [f"{i+1}. {k[:18] + "*"*(len(k)-50)} ({v})" for i, (k, v) in enumerate((tokens).items())]).execute()
     if not re.endswith("Input my own token"):

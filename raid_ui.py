@@ -249,75 +249,97 @@ class Raidkit:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if self.bot.user is None:
+        if self.bot.user is None or self.sel_guild.me is None:
           raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_nicknames:
+          if not confirm(f"You are missing manage nicknames permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         nick: Union[str, Any] = text(f"Nickname for all members (default: NUKED BY {self.bot.user.name}):", raise_keyboard_interrupt=False).execute() or f"NUKED BY {self.bot.user.name}"
-        if not confirm(f"Are you sure you want to change every member's nickname in {self.sel_guild.name} ({self.sel_guild.id}) to {nick}?", raise_keyboard_interrupt=False).execute():
-          continue
         self.bot.loop.create_task(self._mass_nick(self.sel_guild, nick))
       elif sel == 5:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if self.bot.user is None:
+        if self.bot.user is None or self.sel_guild.me is None:
           raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_roles:
+          if not confirm(f"You are missing manage roles permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         role: Union[str, Any] = text(f"Role to give all members (default: NUKED BY {self.bot.user.name}):", raise_keyboard_interrupt=False).execute() or f"NUKED BY {self.bot.user.name}"
-        if not confirm(f"Are you sure you want add that role to every member in {self.sel_guild.name} ({self.sel_guild.id})?", raise_keyboard_interrupt=False).execute():
-          continue
         self.bot.loop.create_task(self._mass_role(self.sel_guild, role))
       elif sel == 6:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
+        if self.sel_guild.me is None:
+          raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_channels:
+          if not confirm(f"You are missing manage channels permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         ch_name: Union[str, Any] = text("Channel name to flood (default: nuked-lol, make sure to conform to Discord's channel naming rule):", raise_keyboard_interrupt=False).execute() or "nuked-lol"
         ch_amount: int = int(number("Amount of channels to flood (min: 1, max: 200, default: 1):", min_allowed=1, max_allowed=200, validate=EmptyInputValidator()).execute())
-        if not confirm(f"Are you sure you want to flood {self.sel_guild.name} ({self.sel_guild.id}) with {ch_amount}x{ch_name} channels?", raise_keyboard_interrupt=False).execute():
-          continue
         self.bot.loop.create_task(self._mass_ch(self.sel_guild, ch_name, ch_amount))
       elif sel == 7:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if self.bot.user is None:
+        if self.bot.user is None or self.sel_guild.me is None:
           raise NotImplementedError()
+        x: int = len([c for c in self.sel_guild.text_channels if c.permissions_for(self.sel_guild.me).send_messages])
+        y: int = len([c for c in self.sel_guild.text_channels if c.type != discord.ChannelType.category])
+        if x != y:
+          if not confirm(f"You only have access to {x}/{y} channels in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         message: Union[str, Any] = text(f"Message to spam (default: @everyone NUKED BY {self.bot.user.name}):", raise_keyboard_interrupt=False).execute() or f"@everyone NUKED BY {self.bot.user.name}"
-        if not confirm(f"Are you sure you want to spam every messageable channels in {self.sel_guild.name} ({self.sel_guild.id}) with \"{message}\"?", raise_keyboard_interrupt=False).execute():
-          continue
-        self.bot.loop.create_task(self._spam(self.sel_guild, message))
+        t = self.bot.loop.create_task(self._spam(self.sel_guild, message))
+        confirm(f"Started spamming in {self.sel_guild.name} ({self.sel_guild.id}), do you want to stop now (no = stop)?", raise_keyboard_interrupt=False).execute()
+        t.cancel()
       elif sel == 8:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if not confirm(f"Are you sure you want to delete all emojis in {self.sel_guild.name} ({self.sel_guild.id})?", raise_keyboard_interrupt=False).execute():
-          continue
+        if self.sel_guild.me is None:
+          raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_guild_expressions:
+          if not confirm(f"You are missing manage guild expressions permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         self.bot.loop.create_task(self._delete_emj(self.sel_guild))
       elif sel == 9:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if not confirm(f"Are you sure you want to delete all stickers in {self.sel_guild.name} ({self.sel_guild.id})?", raise_keyboard_interrupt=False).execute():
-          continue
+        if self.sel_guild.me is None:
+          raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_guild_expressions:
+          if not confirm(f"You are missing manage guild expressions permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         self.bot.loop.create_task(self._delete_stkr(self.sel_guild))
       elif sel == 10:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if not confirm(f"Are you sure you want to delete all roles in {self.sel_guild.name} ({self.sel_guild.id})?", raise_keyboard_interrupt=False).execute():
-          continue
+        if self.sel_guild.me is None:
+          raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_roles:
+          if not confirm(f"You are missing manage roles permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         self.bot.loop.create_task(self._delete_rol(self.sel_guild))
       elif sel == 11:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if not confirm(f"Are you sure you want to delete all channels in {self.sel_guild.name} ({self.sel_guild.id})?", raise_keyboard_interrupt=False).execute():
-          continue
+        if self.sel_guild.me is None:
+          raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_channels:
+          if not confirm(f"You are missing manage channels permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         self.bot.loop.create_task(self._delete_ch(self.sel_guild))
       elif sel == 12:
         if self.sel_guild is None:
@@ -326,28 +348,36 @@ class Raidkit:
           continue
         if self.bot.user is None or self.sel_guild.me is None:
           raise NotImplementedError()
-        if not confirm(f"Are you sure you want to ban all members in {self.sel_guild.name} ({self.sel_guild.id})?", raise_keyboard_interrupt=False).execute():
-          continue
+        if not self.sel_guild.me.guild_permissions.ban_members:
+          if not confirm(f"You are missing ban members permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         self.bot.loop.create_task(self._ban_mb(self.sel_guild, self.sel_guild.me))
       elif sel == 13:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if self.bot.user is None:
+        if self.bot.user is None or self.sel_guild.me is None:
           raise NotImplementedError()
+        if not self.sel_guild.me.guild_permissions.manage_guild:
+          if not confirm(f"You are missing manage guild permission in {self.sel_guild.name} ({self.sel_guild.id}), continue?", raise_keyboard_interrupt=False).execute():
+            continue
         name: Union[str, Any] = text(f"New guild name (default: NUKED BY {self.bot.user.name}):", raise_keyboard_interrupt=False).execute() or f"NUKED BY {self.bot.user.name}"
         desc: Union[str, Any] = text(f"New guild description (default: NUKED BY {self.bot.user.name}):", raise_keyboard_interrupt=False).execute() or f"NUKED BY {self.bot.user.name}"
-        if not confirm(f"Are you sure you want to remove in {self.sel_guild.name} ({self.sel_guild.id})?", raise_keyboard_interrupt=False).execute():
-          continue
         self.bot.loop.create_task(self._edit_guild(self.sel_guild, name, desc))
       elif sel == 14:
         if self.sel_guild is None:
           print("You have not selected a guild yet, select a guild from the menu now and choose this option again")
           self.guild_sel()
           continue
-        if self.bot.user is None:
+        if self.bot.user is None or self.sel_guild.me is None:
           raise NotImplementedError()
+        if self.sel_guild.member_count is None:
+          if not confirm(f"{self.sel_guild.name} ({self.sel_guild.id}) has an unknown number of members, continue?", raise_keyboard_interrupt=False).execute():
+            continue
+        elif self.sel_guild.member_count > 500:
+          if not confirm(f"{self.sel_guild.name} ({self.sel_guild.id}) has more than 500 members, continue?", raise_keyboard_interrupt=False).execute():
+            continue
         msg: Union[str, Any] = text(f"Message to mass DM (default: NUKED BY {self.bot.user.name}):", raise_keyboard_interrupt=False).execute() or f"NUKED BY {self.bot.user.name}"
         self.bot.loop.create_task(self._mass_dm(self.sel_guild, msg))
       elif sel == 15:
