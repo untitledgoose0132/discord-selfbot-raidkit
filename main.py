@@ -11,15 +11,14 @@ import discord
 from discord.ext import commands
 from InquirerPy.inquirer import confirm, secret, select  # type: ignore
 
-from tokengrabber import get_token
 from raid_ui import Raidkit
+from tokengrabber import get_token
 
 bot = commands.Bot(command_prefix=commands.when_mentioned)
 log: Logger = getLogger("discord")
 @bot.event
 async def on_ready() -> None:
-  if not bot.user:
-    return
+  assert bot.user is not None
   log.info(f"Logged in as {bot.user.name} ({bot.user.id})")
   Thread(target=menu).start()
 def console() -> None:
